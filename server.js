@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 
 const handlers = require('./lib/handlers');
 
+require('./db');
+
 const app = express();
 
 app.engine('handlebars', expressHandlebars({
@@ -33,17 +35,10 @@ app.get('/edit-course', handlers.editCourse);
 app.get('/course-details', handlers.courseDetails);
 
 // Custom 404 Page
-app.use((req, res) => {
-    res.status(404);
-    res.render('404');
-});
+app.use(handlers.notFound);
 
 // Custom 500
-app.use((err, req, res, next) => {
-    console.error(err.message);
-    res.status(500);
-    res.render('500');
-});
+app.use(handlers.serverError);
 
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`);
