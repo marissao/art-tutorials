@@ -1,17 +1,72 @@
-<form class="text-center border border-light p-5" action="/register/process" method="POST">
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" class="form-control" placeholder="Username" name="username" value="">
-    </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" class="form-control" placeholder="Password" name="password" value="">
-    </div>
-            
-    <div class="form-group">
-        <label for="repeatPassword">Repeat Password</label>
-        <input type="password" class="form-control" placeholder="Repeat-Password" name="repeatPassword" value="">
-    </div>
-            
-    <button type="submit" class="btn btn-primary">Register</button>
-</form>
+<div id="registerFormContainer">
+        <form class="text-center border border-light p-5" role="form" id="registerForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" placeholder="Username" name="username" value="" required>
+            <div class = "username error"></div>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" placeholder="Password" name="password" value="" required>
+            <div class = "password error"></div>
+        </div>
+                
+        <div class="form-group">
+            <label for="repeatPassword">Repeat Password</label>
+            <input type="password" class="form-control" placeholder="Repeat-Password" name="repeatPassword" value="" required>
+            <div class = "repeatPassword error"></div>
+        </div>
+                
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+
+{{#section 'scripts'}}
+<script>
+    const registerForm = document.getElementById("registerForm");
+    const usernameError = document.querySelector('.username.error');
+    const passwordError = document.querySelector('.password.error');
+    const repeatPasswordError = document.querySelector('.repeatPassword.error');
+
+    registerForm.addEventListener('submit', async event => {
+       event.preventDefault();
+
+       // Reset error messages
+       usernameError.textContent = "";
+       passwordError.textContent = "";
+       repeatPasswordError.textContent = "";
+
+       const form = event.target;
+       const username = form.elements.username.value;
+       const password = form.elements.password.value;
+       const repeatPassword = form.repeatPassword.value;
+       if (password === repeatPassword) {
+           try {
+               const res = await fetch('/register/process', { 
+                   method: 'POST', 
+                   body: JSON.stringify({ username, password}),
+                   headers: { 'Content-Type': 'application/json' },
+                });
+                const data = await res.json();
+
+                // Check inside data obj
+                console.log("This is data: ", data);
+                if (data.errors) {
+                    usernameError.textContent = data.errors.username;
+                    passwordError.textContent = data.errors.password;
+                }
+                console.log("data.user", data.user);
+                if (data.user) {
+                    console.log("made it here");
+                    location.assign('/');
+                }
+           }
+           catch (err) {
+               console.log("Error message: ", err);
+           }
+       } else {
+            repeatPasswordError.textContent = "Passwords do not match"
+       }
+    });
+</script>
+{{/section}}
