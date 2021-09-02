@@ -6,6 +6,16 @@ const handleErrors = (err) => {
     console.log("Printing err.message & err.code", err.message, err.code); // Code property does not exist on most errors but exists on the "unique" error
     let errors = { username: '', password: '', repeatPassword: ''}; // Create error obj which will be sent back to user as JSON
 
+    // Incorrect username
+    if (err.message === "Incorrect username") {
+        errors.username = "That username is not registered";
+    }
+
+    // Incorrect password
+    if (err.message === "Incorrect password") {
+        errors.password = "That password is incorrect";
+    }
+
     // Duplicate error code
     if (err.code === 11000) {
         errors.username = "That username is taken. Try another.";
@@ -21,15 +31,15 @@ const handleErrors = (err) => {
     return errors;
 };
 
-const checkPassword = async (plainTextPassword, hash) => {
-    return await brycpt.compare(plainTextPassword, hash)
-    .then(res => {
-        console.log("Resolved promise: ", res);
-    })
-    .catch(err => {
-        console.log(err);
-    });
- }; 
+// const checkPassword = async (plainTextPassword, hash) => {
+//     return await brycpt.compare(plainTextPassword, hash)
+//     .then(res => {
+//         console.log("Resolved promise: ", res);
+//     })
+//     .catch(err => {
+//         console.log(err);
+//     });
+//  }; 
 
 const maxAge = 24 * 60 * 60; // 1 day in seconds
 const createToken = (id) => {
@@ -53,13 +63,21 @@ exports.registerProcess = async (req, res) => {
         // From handleErrors function, send errors back to user as JSON. Show errors to user on front-end.
         res.status(400).json( { errors });
     }
-    // res.redirect(303, '/');
 };
 
 exports.login = (req, res) => res.render('login');
 
-exports.loginProcess = (req, res) => {
-    console.log('Username: ' + req.body.username);
-    console.log('Password: ' + req.body.password);
-    res.redirect(303, '/');
+exports.loginProcess = async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.login(username, password); // Grab the email and password sent in the req.body
+        const token = createToken(user._id);
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.status(200).json({ user: user._id });
+    }
+    catch (err) {
+        const errors = handleErrors(err);
+        res.status(400).json({ errors });
+    }
 };

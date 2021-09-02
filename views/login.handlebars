@@ -1,12 +1,54 @@
-<form class="text-center border border-light p-5" action="/login/process" method="POST">
+<form class="text-center border border-light p-5" role="form" id="loginForm">
     <div class="form-group">
         <label for="username">Username</label>
         <input type="text" class="form-control" placeholder="Username" name="username" value="">
+        <div class = "username error"></div>
     </div>
     <div class="form-group">
         <label for="password">Password</label>
         <input type="password" class="form-control" placeholder="Password" name="password" value="">
+        <div class = "password error"></div>
     </div>
 
     <button type="submit" class="btn btn-primary">Login</button>
 </form>
+
+{{#section 'scripts'}}
+<script>
+    const loginForm = document.getElementById("loginForm");
+    const usernameError = document.querySelector('.username.error');
+    const passwordError = document.querySelector('.password.error');
+
+    loginForm.addEventListener('submit', async event => {
+       event.preventDefault();
+
+       // Reset error messages
+       usernameError.textContent = "";
+       passwordError.textContent = "";
+
+       const username = loginForm.elements.username.value;
+       const password = loginForm.elements.password.value;
+       try {
+           const res = await fetch('/login/process', {
+               method: 'POST',
+               body: JSON.stringify({ username, password}),
+               headers: { 'Content-Type': 'application/json' },
+               });
+            const data = await res.json();
+            console.log("This is data:  ", data);
+
+            if (data.errors) {
+                usernameError.textContent = data.errors.username;
+                passwordError.textContent = data.errors.password;
+            }
+            console.log("data.user", data.user);
+            if (data.user) {
+                location.assign('/');
+            }
+        }
+        catch (err) {
+            console.log("Error message: ", err);
+        }
+    });
+</script>
+{{/section}}
