@@ -1,7 +1,8 @@
 const courses = require('../controllers/courses');
+const { requireAuth } = require('../middleware/authMiddleware');
 
 module.exports = (app) => {
-    app.get('/create-course', courses.createCourse);
+    app.get('/course/create', requireAuth, courses.createCourse);
 
     app.get('/edit-course', courses.editCourse);
     

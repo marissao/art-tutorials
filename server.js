@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 const main = require('./controllers/main');
+const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 
 require('./db');
 
@@ -34,6 +35,8 @@ const port = process.env.PORT || 5000;
 app.use(express.static(__dirname + '/static'));
 app.use(express.json()); // Remove later after testing in Postman
 
+// Routes
+app.get("*", checkUser);
 require('./routes/mainRoutes')(app);
 require('./routes/authRoutes')(app);
 require('./routes/courseRoutes')(app);

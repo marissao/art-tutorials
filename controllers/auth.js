@@ -81,3 +81,9 @@ exports.loginProcess = async (req, res) => {
         res.status(400).json({ errors });
     }
 };
+
+exports.logout = (req, res) => {
+    // Replace cookie w/ an empty string and short expiration date
+    res.cookie('jwt', '', { maxAge: 1 });
+    res.redirect('/');
+};
