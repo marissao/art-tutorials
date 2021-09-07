@@ -9,46 +9,23 @@
 </section>
 
 <div class="container mt-3">
-    <div class="row ">
+    <div class="row">
         <div class="card-deck d-flex justify-content-center">
-            <div class="card mb-4">
-                <img class="card-img-top"
-                    src="https://blog.cyberpanel.net/wp-content/uploads/2019/03/express-js-cyberpanel.jpeg"
-                    alt="Card image cap" width="400">
-                <div class="card-body">
-                    <h4 class="card-title">ExpressJS</h4>
-                </div>
-                <div class="card-footer">
-                    <a href=""><button type="button" class="btn btn-info">Details</button></a>
-                    <small class="float-right">Date...</small>
-                </div>
-            </div>
 
+            {{#each courses}}
             <div class="card mb-4">
                 <img class="card-img-top"
-                    src="https://colorlib.com/wp/wp-content/uploads/sites/2/angular-logo.png"
+                    src="{{imageUrl}}"
                     alt="Card image cap" width="400">
                 <div class="card-body">
-                    <h4 class="card-title">Angular</h4>
+                    <h4 class="card-title">{{title}}</h4>
                 </div>
                 <div class="card-footer">
-                    <a href=""><button type="button" class="btn btn-info">Details</button></a>
-                    <small class="float-right">Date...</small>
+                    <a href="/course-details/{{_id}}"><button type="button" class="btn btn-info">Details</button></a>
+                    <small class="float-right">{{createdAt}}</small>
                 </div>
             </div>
-
-            <div class="card mb-4">
-                <img class="card-img-top"
-                    src="http://blog.addthiscdn.com/wp-content/uploads/2014/11/addthis-react-flux-javascript-scaling.png"
-                    alt="Card image cap" width="400">
-                <div class="card-body">
-                    <h4 class="card-title">React</h4>
-                </div>
-                <div class="card-footer">
-                    <a href=""><button type="button" class="btn btn-info">Details</button></a>
-                    <small class="float-right">Date...</small>
-                </div>
-            </div>
+            {{/each}}
         </div>
     </div>
 </div>

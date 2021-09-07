@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const Course = require('../models/Course');
 
 module.exports = (app) => {
     app.get('/', (req, res, next) => {
@@ -9,7 +10,7 @@ module.exports = (app) => {
                     console.log("Home page token error: ", err.message);
                     res.render('guest-home');
                 } else {
-                    console.log("Decoded token: ", decodedToken);
+                    console.log("Home page decoded token: ", decodedToken);
                     next(); 
                 }
             });
@@ -17,7 +18,23 @@ module.exports = (app) => {
             res.render('guest-home');
         }
     },
-    (req, res) => {
-        res.render('user-home');
+    async (req, res) => {
+        try {
+            let unsortedCourses = await Course.find({}).lean().exec();
+            console.log("unsorted", unsortedCourses);
+            let sortedCourses = unsortedCourses.sort((a,b) => {
+                return b.createdAt - a.createdAt;
+            })
+            sortedCourses.forEach(course => {
+                course.createdAt = course.createdAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "medium"});
+            })
+            console.log("sorted", sortedCourses);
+            res.render('user-home', { courses: sortedCourses });
+            
+        }
+        catch (err) {
+            console.log(err);
+        }
+        
     });
 };

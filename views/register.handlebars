@@ -10,7 +10,6 @@
             <input type="password" class="form-control" placeholder="Password" name="password" value="" required>
             <div class = "password error"></div>
         </div>
-                
         <div class="form-group">
             <label for="repeatPassword">Repeat Password</label>
             <input type="password" class="form-control" placeholder="Repeat-Password" name="repeatPassword" value="" required>
@@ -48,16 +47,14 @@
                    headers: { 'Content-Type': 'application/json' },
                 });
                 const data = await res.json();
-
-                // Check inside data obj
                 console.log("This is data: ", data);
+
                 if (data.errors) {
                     usernameError.textContent = data.errors.username;
                     passwordError.textContent = data.errors.password;
                 }
-                console.log("data.user", data.user);
+
                 if (data.user) {
-                    console.log("made it here");
                     location.assign('/');
                 }
            }

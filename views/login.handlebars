@@ -34,15 +34,15 @@
                body: JSON.stringify({ username, password}),
                headers: { 'Content-Type': 'application/json' },
                });
-            const data = await res.json();
+            const data = await res.json(); // Returns obj w/ user's id if POST is successful. Otherwise returns an obj created in the handleErrors function
             console.log("This is data:  ", data);
 
             if (data.errors) {
                 usernameError.textContent = data.errors.username;
                 passwordError.textContent = data.errors.password;
             }
-            console.log("data.user", data.user);
-            if (data.user) {
+
+            if (data.user) { // data.user is the user's mongoDB _id
                 location.assign('/');
             }
         }

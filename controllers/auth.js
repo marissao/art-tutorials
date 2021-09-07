@@ -1,14 +1,13 @@
 const User = require('../models/User');
-const brycpt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const handleErrors = (err) => {
     console.log("Printing err.message & err.code", err.message, err.code); // Code property does not exist on most errors but exists on the "unique" error
-    let errors = { username: '', password: '', repeatPassword: ''}; // Create error obj which will be sent back to user as JSON
+    let errors = { username: '', password: ''}; // Create error obj which will be sent back to user as JSON
 
     // Incorrect username
     if (err.message === "Incorrect username") {
-        errors.username = "That username is not registered";
+        errors.username = "That username does not exist";
     }
 
     // Incorrect password
@@ -31,16 +30,6 @@ const handleErrors = (err) => {
     return errors;
 };
 
-// const checkPassword = async (plainTextPassword, hash) => {
-//     return await brycpt.compare(plainTextPassword, hash)
-//     .then(res => {
-//         console.log("Resolved promise: ", res);
-//     })
-//     .catch(err => {
-//         console.log(err);
-//     });
-//  }; 
-
 const maxAge = 24 * 60 * 60; // 1 day in seconds
 const createToken = (id) => {
     return jwt.sign({ id }, process.env.SECRET, { expiresIn: maxAge });
@@ -49,7 +38,7 @@ const createToken = (id) => {
 exports.register = (req, res) => res.render('register');
 
 exports.registerProcess = async (req, res) => {
-    const { username, password, repeatPassword } = req.body;
+    const { username, password } = req.body;
     
     try {
         const user = await User.create({ username, password });

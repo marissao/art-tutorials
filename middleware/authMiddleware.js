@@ -6,12 +6,13 @@ const requireAuth = (req, res, next) => {
 
     // Check if jwt exists & is verified
     if (token) {
+        // Make sure jwt has not been tampered with
         jwt.verify(token, process.env.SECRET, (err, decodedToken) => {
             if (err) {
                 console.log("requireAuth token error: ", err.message);
                 res.redirect("/login");
             } else {
-                console.log("Decoded token: ", decodedToken);
+                console.log("requireAuth decoded token: ", decodedToken);
                 next(); 
             }
         });
@@ -29,7 +30,7 @@ const checkUser = (req, res, next) => {
                 res.locals.user = null;
                 next();
             } else {
-                console.log("Decoded token: ", decodedToken);
+                console.log("checkUser decoded token: ", decodedToken);
                 let user = await User.findById(decodedToken.id);
                 res.locals.user = user.toObject();
                 next(); 
@@ -40,5 +41,8 @@ const checkUser = (req, res, next) => {
         next();
     }
 };
+
+// res.locals is an obj passed into the rendering engine
+// Thus courses.js controller, function createCoursePost, will log "[Object: null prototype] {}" if you console.log(res.locals)
 
 module.exports = { requireAuth, checkUser };

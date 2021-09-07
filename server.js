@@ -36,7 +36,7 @@ app.use(express.static(__dirname + '/static'));
 app.use(express.json()); // Remove later after testing in Postman
 
 // Routes
-app.get("*", checkUser);
+app.get("*", checkUser); // Need to apply checkUser middleware on all routes b/c impacts nav bar
 require('./routes/mainRoutes')(app);
 require('./routes/authRoutes')(app);
 require('./routes/courseRoutes')(app);

@@ -15,7 +15,7 @@ const userSchema = mongoose.Schema({
         required: [true, 'Please enter a password'],
         minlength: [6, 'Minimum password length is 6 characters'],
     },
-    enrolled_courses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
 });
 
 userSchema.pre('save', async function(next) {

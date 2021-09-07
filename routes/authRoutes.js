@@ -1,4 +1,5 @@
 const auth = require('../controllers/auth');
+const { requireAuth } = require('../middleware/authMiddleware');
 
 module.exports = (app) => {
     app.get('/register', auth.register);
