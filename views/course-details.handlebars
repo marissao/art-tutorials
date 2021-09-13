@@ -11,8 +11,12 @@
 
             <a class="btn btn-danger" href="/">Delete</a>
             <a class="btn btn-warning" href="/">Edit</a>
+            {{#if enrolled}}
             <span class="enrolled-span">You are already enrolled</span>
+            {{/if}}
+            {{#unless enrolled}}
             <a class="btn btn-primary" href="/">Enroll</a>
+            {{/unless}}
         </div>
     </div>
 </div>
