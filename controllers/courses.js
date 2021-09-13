@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const Course = require('../models/Course');
+const User = require('../models/User');
 
 const handleErrors = (err) => {
     console.log("Printing err.message & err.code", err.message, err.code);
@@ -42,9 +43,22 @@ exports.editCourse = (req, res) => res.render('edit-course');
 exports.courseDetails = async (req, res) => {
     const courseId = req.params.id;
     const course = await Course.findById(courseId).lean().exec();
-    console.log(course);
 
-    res.render('course-details', { course })
+    const decodedToken = jwt.verify(req.cookies.jwt, process.env.SECRET); // Returns obj with properties id, iat, and exp
+    const userId = decodedToken.id;
+
+    const loggedInUser = await User.findById(userId);
+
+    const enrolled = loggedInUser.enrolledCourses.includes(courseId);
+
+    let loggedInUserIsCreator;
+    if (course.creatorId === userId) {
+        loggedInUserIsCreator = true;
+    } else {
+        loggedInUserIsCreator = false;
+    }
+
+    res.render('course-details', { course: course, enrolled: enrolled, creator: loggedInUserIsCreator })
 };
 
 

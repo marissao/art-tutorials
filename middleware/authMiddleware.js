@@ -45,16 +45,4 @@ const checkUser = (req, res, next) => {
 // res.locals is an obj passed into the rendering engine
 // Thus courses.js controller, function createCoursePost, will log "[Object: null prototype] {}" if you console.log(res.locals)
 
-const checkEnrollment = async (req, res, next) => {
-    const courseId = req.url.split("/")[2];
-    const loggedInUser = res.locals.user;
-    const enrolled = loggedInUser.enrolledCourses.includes(courseId);
-    if (!enrolled) {
-        res.locals.enrolled = false;
-    } else {
-        res.locals.enrolled = false;
-    }
-    next();
-};
-
-module.exports = { requireAuth, checkUser, checkEnrollment };
+module.exports = { requireAuth, checkUser };
