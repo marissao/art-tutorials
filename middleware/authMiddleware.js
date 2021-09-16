@@ -42,7 +42,28 @@ const checkUser = (req, res, next) => {
     }
 };
 
+const checkIsCreator = (req, res, next) => {
+    const courseId = req.params.id;
+    console.log("courseId middleware: ", courseId);
+    const token = req.cookies.jwt;
+    next()
+    // if (token) {
+    //     jwt.verify(token, process.env.SECRET, (err, decodedToken) => {
+    //         if (err) {
+    //             console.log("checkIsCreator: ", err.message);
+    //             res.redirect("/");
+    //         } else {
+    //             console.log("checkIsCreator decoded token: ", decodedToken);
+
+    //             next(); 
+    //         }
+    //     });
+    // } else {
+    //     res.redirect("/");
+    // }
+};
+
 // res.locals is an obj passed into the rendering engine
 // Thus courses.js controller, function createCoursePost, will log "[Object: null prototype] {}" if you console.log(res.locals)
 
-module.exports = { requireAuth, checkUser };
+module.exports = { requireAuth, checkUser, checkIsCreator };

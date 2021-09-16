@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const Course = require('../models/Course');
 const User = require('../models/User');
 
@@ -38,7 +39,26 @@ exports.createCoursePost = async (req, res) => {
     }
 };
 
-exports.editCourse = (req, res) => res.render('edit-course');
+exports.editCourse = async (req, res) => {
+    const courseId = req.params.id;
+    const course = await Course.findById(courseId).lean().exec();
+    res.render('edit-course', { course });
+}
+
+exports.editCoursePost = async (req, res) => {
+    const refererArray = req.headers.referer.split('/');
+    const courseId = refererArray[refererArray.length - 1];
+    const { title, description, imageUrl, isPublic } = req.body;
+
+    try {
+        let doc = await Course.findByIdAndUpdate(courseId, { title, description, imageUrl, isPublic });
+        res.status(200).json({ message: "Course has been updated" }); // Object { message: "Course has been updated" } set. Checked on client side to initiate redirect.
+    }
+    catch (err) {
+        const errors = handleErrors(err);
+        res.status(400).json({ errors });
+    }
+}
 
 exports.courseDetails = async (req, res) => {
     const courseId = req.params.id;

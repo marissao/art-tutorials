@@ -1,21 +1,70 @@
-<form class="text-center border border-light p-5" action="" method="POST">
+<form class="text-center border border-light p-5" role="form" id="editCourseForm">
     <h1>Edit Course</h1>
     <div class="form-group">
         <label for="title">Course Title</label>
-        <input type="text" class="form-control" placeholder="Course name" value="" name="title">
+        <input type="text" class="form-control" placeholder="Course name" name="title" value="{{course.title}}" required>
+        <div class = "course name error"></div>
     </div>
     <div class="form-group">
         <label for="description">Course Description</label>
-        <textarea class="form-control" placeholder="Description" name="description"></textarea>
+        <textarea class="form-control" placeholder="Description" name="description">{{course.description}} required</textarea>
+        <div class = "description error"></div>
     </div>
     <div class="form-group">
         <label for="imageUrl">Image url</label>
-        <input type="text" class="form-control" placeholder="Image Url"
-            value="" name="imageUrl">
+        <input type="text" class="form-control" placeholder="Image Url" name="imageUrl"
+            value="{{course.imageUrl}}" required>
+        <div class = "image error"></div>
     </div>
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="check-box" name="isPublic">
+        <input type="checkbox" class="form-check-input" id="check-box" name="isPublic" {{#if course.isPublic}} checked {{/if}}>
         <label class="form-check-label" for="check-box">Public</label>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+{{#section 'scripts'}}
+<script>
+    const editCourseForm = document.getElementById("editCourseForm");
+    const courseNameError = document.querySelector('.course.name.error');
+    const descriptionError = document.querySelector('.description.error');
+    const imageError = document.querySelector('.image.error');
+
+    editCourseForm.addEventListener('submit', async event => {
+       event.preventDefault();
+
+       // Reset error messages
+       courseNameError.textContent = "";
+       descriptionError.textContent = "";
+       imageError.textContent = "";
+
+       const form = event.target;
+       const title = form.elements.title.value;
+       const description = form.elements.description.value;
+       const imageUrl = form.imageUrl.value;
+       const isPublic = form.isPublic.checked;
+
+       try {
+           const res = await fetch('/edit-course/:id', {
+               method: 'POST',
+               body: JSON.stringify({ title, description, imageUrl, isPublic }),
+               headers: { 'Content-Type': 'application/json' },
+               });
+            const data = await res.json();
+
+            if (data.errors) {
+                courseNameError.textContent = data.errors.title;
+                descriptionError.textContent = data.errors.description;
+                imageError.textContent = data.errors.imageUrl;
+            }
+
+            if (data.message === "Course has been updated") {
+                location.assign('/');
+            }
+        }
+        catch (err) {
+            console.log("Edit course error message: ", err);
+        }
+    });
+</script>
+{{/section}}
