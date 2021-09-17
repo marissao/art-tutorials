@@ -83,10 +83,23 @@ exports.editCoursePost = async (req, res) => {
 
 exports.deleteCourse = async (req, res) => {
     const courseId = req.params.id;
-    Course.findByIdAndDelete(courseId)
+    await Course.findByIdAndDelete(courseId)
     .then(result => {
         // In Node, cannot redirect an AJAX request, need to send text/json data back to browser. Can store a redirect property in the data that is sent back to the browser. 
         res.json({ redirect: '/' }); // Send databack to the front-end, accessible in .then
+    })
+    .catch(err => {
+        console.log(err);
+    })
+}
+
+exports.enrollInCourse = async (req, res) => {
+    const courseId = req.params.id;
+    const decodedToken = jwt.verify(req.cookies.jwt, process.env.SECRET);
+    const userId = decodedToken.id;
+    await Course.findByIdAndUpdate(courseId, { $push: { enrolledUsers: userId } })
+    .then(result => {
+        res.json({ redirect: '/' });
     })
     .catch(err => {
         console.log(err);

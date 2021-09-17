@@ -11,5 +11,7 @@ module.exports = (app) => {
     app.put('/edit-course/:id', [requireAuth, checkIsCreator], courses.editCoursePost);
 
     app.delete('/delete-course/:id', courses.deleteCourse);
+
+    app.put('/enroll-course/:id', [requireAuth, checkIsCreator], courses.enrollInCourse);
     
 };

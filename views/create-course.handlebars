@@ -50,7 +50,6 @@
                headers: { 'Content-Type': 'application/json' },
                });
             const data = await res.json();
-            console.log("This is data:  ", data);
 
             if (data.errors) {
                 courseNameError.textContent = data.errors.title;
@@ -59,7 +58,6 @@
             }
 
             if (data.course) {
-                console.log("data.course: ", data.course);
                 location.assign('/');
             }
         }

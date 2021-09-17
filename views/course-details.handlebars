@@ -2,7 +2,7 @@
     <h1 class="my-4">{{course.title}}</h1>
     <div class="row">
         <div class="col-md-8">
-            <img class="img-fluid" src="{{course.imageUrl}}" alt="{{course.title}}" />
+            <img class="img-fluid" src="{{course.imageUrl}}" alt="{{course.title}}" width="500" />
         </div>
 
         <div class="col-md-4 text-center">
@@ -18,13 +18,15 @@
             <span class="enrolled-span">You are already enrolled</span>
             {{/if}}
             {{#unless enrolled}}
-            <a class="btn btn-primary" href="/">Enroll</a>
+            <a class="btn btn-primary" data-doc="{{course._id}}">Enroll</a>
             {{/unless}}
         </div>
     </div>
 </div>
 
 {{#section 'scripts'}}
+
+{{#if creator}}
 <script>
     const deleteBtn = document.querySelector("a.btn-danger");
 
@@ -38,4 +40,20 @@
         .catch(e => console.log(e));
     });
 </script>
+{{/if}}
+
+<script>
+    const enrollBtn = document.querySelector("a.btn-primary");
+    
+    enrollBtn.addEventListener('click', event => {
+        const endpoint = `/enroll-course/${enrollBtn.dataset.doc}`
+        fetch (endpoint, {
+            method: 'PUT',
+        })
+        .then(response => response.json())
+        .then(data => window.location.href = data.redirect)
+        .catch(e => console.log(e));
+    })
+</script>
+
 {{/section}}
