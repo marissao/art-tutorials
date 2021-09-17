@@ -5,10 +5,9 @@ module.exports = (app) => {
     app.get('/', async (req, res, next) => {
         const token = req.cookies.jwt;
         let unsortedCourses = await Course.find({}).lean().exec();
-        console.log("unsorted #1", unsortedCourses);
         let top3CoursesSorted = unsortedCourses.sort((a,b) => {
-            return b.enrolledUsers - a.enrolledUsers;
-        }).slice(0, 4)
+            return b.enrolledUsers.length - a.enrolledUsers.length;
+        }).slice(0, 3)
 
         // Check if token exists
         if (token) {
@@ -31,14 +30,14 @@ module.exports = (app) => {
     async (req, res) => {
         try {
             let unsortedCourses = await Course.find({}).lean().exec();
-            console.log("unsorted", unsortedCourses);
-            let sortedCourses = unsortedCourses.sort((a,b) => {
+            console.log("All courses, unsorted:", unsortedCourses);
+            let sortedCourses = unsortedCourses.filter(course => course.isPublic === true).sort((a,b) => {
                 return b.createdAt - a.createdAt;
             })
             sortedCourses.forEach(course => {
                 course.createdAt = course.createdAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "medium"});
             })
-            console.log("sorted", sortedCourses);
+            console.log("Public courses sorted w/ date & time formatted:", sortedCourses);
             res.render('user-home', { courses: sortedCourses });
             
         }

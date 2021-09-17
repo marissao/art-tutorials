@@ -1,9 +1,9 @@
 const courses = require('../controllers/courses');
-const { requireAuth, checkUser, checkIsCreator } = require('../middleware/authMiddleware');
+const { requireAuth, checkIsCreator } = require('../middleware/authMiddleware');
 
 module.exports = (app) => {
     app.get('/course/create', requireAuth, courses.createCourse);
-    app.post('/course/create', courses.createCoursePost);
+    app.post('/course/create', requireAuth, courses.createCoursePost);
 
     app.get('/course-details/:id', requireAuth, courses.courseDetails);
 

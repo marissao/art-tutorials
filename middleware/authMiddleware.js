@@ -21,6 +21,7 @@ const requireAuth = (req, res, next) => {
     }
 };
 
+// Used for conditional rendering of nav bar, applied to all routes
 const checkUser = (req, res, next) => {
     const token = req.cookies.jwt;
     if (token) {
@@ -47,20 +48,6 @@ const checkIsCreator = (req, res, next) => {
     console.log("courseId middleware: ", courseId);
     const token = req.cookies.jwt;
     next()
-    // if (token) {
-    //     jwt.verify(token, process.env.SECRET, (err, decodedToken) => {
-    //         if (err) {
-    //             console.log("checkIsCreator: ", err.message);
-    //             res.redirect("/");
-    //         } else {
-    //             console.log("checkIsCreator decoded token: ", decodedToken);
-
-    //             next(); 
-    //         }
-    //     });
-    // } else {
-    //     res.redirect("/");
-    // }
 };
 
 // res.locals is an obj passed into the rendering engine

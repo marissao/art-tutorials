@@ -8,5 +8,5 @@ module.exports = (app) => {
     app.get('/login', auth.login);
     app.post('/login/process', auth.loginProcess);
 
-    app.get('/logout', auth.logout);
+    app.get('/logout', requireAuth, auth.logout);
 };
