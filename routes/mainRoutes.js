@@ -5,7 +5,7 @@ module.exports = (app) => {
     app.get('/', async (req, res, next) => {
         const token = req.cookies.jwt;
         let unsortedCourses = await Course.find({}).lean().exec();
-        let top3CoursesSorted = unsortedCourses.sort((a,b) => {
+        let top3CoursesSorted = unsortedCourses.filter(course => course.isPublic === true).sort((a,b) => {
             return b.enrolledUsers.length - a.enrolledUsers.length;
         }).slice(0, 3)
 
@@ -17,7 +17,6 @@ module.exports = (app) => {
                     res.render('guest-home', { courses: top3CoursesSorted });
                 } else {
                     // If token has been verified and there is no err, pass on request to next middleware in the pipeline
-                    console.log("Home page decoded token: ", decodedToken);
                     next(); 
                 }
             });
@@ -30,14 +29,14 @@ module.exports = (app) => {
     async (req, res) => {
         try {
             let unsortedCourses = await Course.find({}).lean().exec();
-            console.log("All courses, unsorted:", unsortedCourses);
+            // console.log("All courses, unsorted:", unsortedCourses);
             let sortedCourses = unsortedCourses.filter(course => course.isPublic === true).sort((a,b) => {
                 return b.createdAt - a.createdAt;
             })
             sortedCourses.forEach(course => {
                 course.createdAt = course.createdAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "medium"});
             })
-            console.log("Public courses sorted w/ date & time formatted:", sortedCourses);
+            // console.log("Public courses sorted w/ date & time formatted:", sortedCourses);
             res.render('user-home', { courses: sortedCourses });
             
         }

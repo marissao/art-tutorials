@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Course = require('../models/Course');
 
 const requireAuth = (req, res, next) => {
     const token = req.cookies.jwt;
@@ -43,11 +44,30 @@ const checkUser = (req, res, next) => {
     }
 };
 
-const checkIsCreator = (req, res, next) => {
+const checkIsCreator = async (req, res, next) => {
     const courseId = req.params.id;
     console.log("courseId middleware: ", courseId);
-    const token = req.cookies.jwt;
-    next()
+    const decodedToken = jwt.verify(req.cookies.jwt, process.env.SECRET);
+    const userId = decodedToken.id;
+    
+    if (courseId) {
+        await Course.findById(courseId)
+        .then(result => {
+            if (result.creatorId === userId) {
+                console.log("Logged in user is the course's creator");
+                next();
+            } else {
+                console.log("Logged in user did not create this course");
+                res.redirect("/");
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    } else {
+        console.log("courseId does not exist");
+        res.redirect("/");
+    }
 };
 
 // res.locals is an obj passed into the rendering engine
