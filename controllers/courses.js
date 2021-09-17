@@ -31,16 +31,19 @@ exports.courseDetails = async (req, res) => {
 
     const loggedInUser = await User.findById(userId);
 
-    const enrolled = loggedInUser.enrolledCourses.includes(courseId);
-
-    let loggedInUserIsCreator;
+    let userIsCreator;
     if (course.creatorId === userId) {
-        loggedInUserIsCreator = true;
+        userIsCreator = true;
     } else {
-        loggedInUserIsCreator = false;
+        userIsCreator = false;
     }
 
-    res.render('course-details', { course: course, enrolled: enrolled, creator: loggedInUserIsCreator })
+    let userIsEnrolled = course.enrolledUsers.some((user) => {
+        return user.equals(userId);
+    })
+    console.log(userIsEnrolled);
+
+    res.render('course-details', { course: course, enrolled: userIsEnrolled, creator: userIsCreator })
 };
 
 exports.createCourse = (req, res) => res.render('create-course');

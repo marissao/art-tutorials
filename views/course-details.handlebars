@@ -42,6 +42,7 @@
 </script>
 {{/if}}
 
+{{#unless enrolled}}
 <script>
     const enrollBtn = document.querySelector("a.btn-primary");
     
@@ -55,5 +56,6 @@
         .catch(e => console.log(e));
     })
 </script>
+{{/unless}}
 
 {{/section}}
