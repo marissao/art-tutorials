@@ -22,6 +22,27 @@ const handleErrors = (err) => {
     return errors;
 };
 
+exports.courseDetails = async (req, res) => {
+    const courseId = req.params.id;
+    const course = await Course.findById(courseId).lean().exec();
+
+    const decodedToken = jwt.verify(req.cookies.jwt, process.env.SECRET); // Returns obj with properties id, iat, and exp
+    const userId = decodedToken.id;
+
+    const loggedInUser = await User.findById(userId);
+
+    const enrolled = loggedInUser.enrolledCourses.includes(courseId);
+
+    let loggedInUserIsCreator;
+    if (course.creatorId === userId) {
+        loggedInUserIsCreator = true;
+    } else {
+        loggedInUserIsCreator = false;
+    }
+
+    res.render('course-details', { course: course, enrolled: enrolled, creator: loggedInUserIsCreator })
+};
+
 exports.createCourse = (req, res) => res.render('create-course');
 
 exports.createCoursePost = async (req, res) => {
@@ -51,7 +72,7 @@ exports.editCoursePost = async (req, res) => {
     const { title, description, imageUrl, isPublic } = req.body;
 
     try {
-        let doc = await Course.findByIdAndUpdate(courseId, { title, description, imageUrl, isPublic });
+        await Course.findByIdAndUpdate(courseId, { title, description, imageUrl, isPublic });
         res.status(200).json({ message: "Course has been updated" }); // Object { message: "Course has been updated" } set. Checked on client side to initiate redirect.
     }
     catch (err) {
@@ -60,26 +81,14 @@ exports.editCoursePost = async (req, res) => {
     }
 }
 
-exports.courseDetails = async (req, res) => {
+exports.deleteCourse = async (req, res) => {
     const courseId = req.params.id;
-    const course = await Course.findById(courseId).lean().exec();
-
-    const decodedToken = jwt.verify(req.cookies.jwt, process.env.SECRET); // Returns obj with properties id, iat, and exp
-    const userId = decodedToken.id;
-
-    const loggedInUser = await User.findById(userId);
-
-    const enrolled = loggedInUser.enrolledCourses.includes(courseId);
-
-    let loggedInUserIsCreator;
-    if (course.creatorId === userId) {
-        loggedInUserIsCreator = true;
-    } else {
-        loggedInUserIsCreator = false;
-    }
-
-    res.render('course-details', { course: course, enrolled: enrolled, creator: loggedInUserIsCreator })
-};
-
-
-
+    Course.findByIdAndDelete(courseId)
+    .then(result => {
+        // In Node, cannot redirect an AJAX request, need to send text/json data back to browser. Can store a redirect property in the data that is sent back to the browser. 
+        res.json({ redirect: '/' }); // Send databack to the front-end, accessible in .then
+    })
+    .catch(err => {
+        console.log(err);
+    })
+}

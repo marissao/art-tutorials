@@ -8,6 +8,8 @@ module.exports = (app) => {
     app.get('/course-details/:id', requireAuth, courses.courseDetails);
 
     app.get('/edit-course/:id', [requireAuth, checkIsCreator], courses.editCourse);
-    app.post('/edit-course/:id', [requireAuth, checkIsCreator], courses.editCoursePost);
+    app.put('/edit-course/:id', [requireAuth, checkIsCreator], courses.editCoursePost);
+
+    app.delete('/delete-course/:id', courses.deleteCourse);
     
 };

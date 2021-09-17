@@ -10,8 +10,8 @@
             <p>{{course.description}}</p>
 
             {{#if creator}}
-            <a class="btn btn-danger" href="/">Delete</a>
-            <a class="btn btn-warning" href="/edit-course/{{course._id}}"">Edit</a>
+            <a class="btn btn-danger" data-doc="{{course._id}}">Delete</a>
+            <a class="btn btn-warning" href="/edit-course/{{course._id}}">Edit</a>
             {{/if}}
 
             {{#if enrolled}}
@@ -23,3 +23,19 @@
         </div>
     </div>
 </div>
+
+{{#section 'scripts'}}
+<script>
+    const deleteBtn = document.querySelector("a.btn-danger");
+
+    deleteBtn.addEventListener('click', event => {
+        const endpoint = `/delete-course/${deleteBtn.dataset.doc}`
+        fetch (endpoint, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => window.location.href = data.redirect)
+        .catch(e => console.log(e));
+    });
+</script>
+{{/section}}

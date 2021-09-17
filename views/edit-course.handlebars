@@ -46,7 +46,7 @@
 
        try {
            const res = await fetch('/edit-course/:id', {
-               method: 'POST',
+               method: 'PUT',
                body: JSON.stringify({ title, description, imageUrl, isPublic }),
                headers: { 'Content-Type': 'application/json' },
                });
